@@ -24,7 +24,9 @@ func (a *appServer) initHandler() {
 
 func (a *appServer) v1() {
 	customerGroup := a.r.Group("/customers")
+	paymentGroup := a.r.Group("/payment")
 	api.LoginApiRoute(customerGroup, a.c.UseCaseManager.CustomerUseCase())
+	api.PaymentApi(paymentGroup, a.c.UseCaseManager.TransferUseCase())
 }
 
 func (a *appServer) Run() {

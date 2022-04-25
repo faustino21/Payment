@@ -83,7 +83,6 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 		} else if method != JwtSigningMethod {
 			return nil, fmt.Errorf("signing method invalid")
 		}
-
 		return JwtSignatureKey, nil
 	})
 
