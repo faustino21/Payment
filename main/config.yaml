@@ -1,0 +1,13 @@
+
+api:
+  app_name: "PaymentApplictaion71n0"
+  log_level: "debug"
+  url: "localhost:3030"
+  signature_key : "71[][][]\\svbdbvuw732eubevbbeyrbywebwiueuwiwifwfwe72327"
+db:
+  db_user: "root"
+  db_password: "1234"
+  db_host: "localhost"
+  db_port: "3306"
+  db_name: "payment"
+
