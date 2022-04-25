@@ -48,11 +48,34 @@ func (t *TransferApi) Payment() gin.HandlerFunc {
 	}
 }
 
+func (t *TransferApi) ShowTransferDetail() gin.HandlerFunc {
+	funcName := "TransferApi.ShowTransferDetail"
+
+	return func(c *gin.Context) {
+		var transferId httpReq.TransferDetailReq
+
+		err := t.ParseRequestBody(c, &transferId)
+		if err != nil {
+			t.ParsingError(c, err)
+			return
+		}
+
+		data, err := t.transfer.ShowTransferDetail(transferId.TransferId)
+		if err != nil {
+			util.LogError(funcName, "", err)
+			commonResp.NewAppHttpResponse(c).FailedResp(http.StatusBadRequest, commonResp.NewFailedMessage(err.Error()))
+			return
+		}
+		commonResp.NewAppHttpResponse(c).SuccessResp(http.StatusOK, commonResp.NewSuccessMessage(data))
+	}
+}
+
 func PaymentApi(route *gin.RouterGroup, transfer usecase.TransferUseCase) *TransferApi {
 	transferApi := TransferApi{
 		transfer: transfer,
 	}
 
 	route.POST("/:customerId/:merchantId", transferApi.Payment())
+	route.GET("/detail", transferApi.ShowTransferDetail())
 	return &transferApi
 }

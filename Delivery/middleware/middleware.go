@@ -44,16 +44,6 @@ func AuthTokenMiddleware() gin.HandlerFunc {
 				return
 			}
 
-			//err := usecase.Authorize(tokenString)
-			//if err != nil {
-			//	c.JSON(401, gin.H{
-			//		"message": "Unauthorized",
-			//	})
-			//	c.Abort()
-			//	return
-			//}
-			//c.Next()
-
 			token, err := ParseToken(tokenString)
 			if err != nil {
 				c.JSON(401, gin.H{

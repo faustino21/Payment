@@ -20,7 +20,7 @@ func (m *merchantRepoImpl) GetMerchant(tx *sqlx.Tx, id int) (*entity.Merchant, e
 	funcName := "MerchantRepo.GetMerchant"
 	var merchant entity.Merchant
 
-	err := tx.Get(&merchant, "SELECT name, saldo FROM merchant WHERE merchant_id = ?", id)
+	err := tx.Get(&merchant, "SELECT merchant_name, saldo FROM merchant WHERE merchant_id = ?", id)
 	if err != nil {
 		util.LogError(funcName, "", err)
 		return nil, fmt.Errorf(err.Error())

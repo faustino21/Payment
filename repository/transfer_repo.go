@@ -3,14 +3,16 @@ package repository
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"payment/Delivery/httpResp"
 	"payment/entity"
 	"payment/util"
 )
 
 type TransferRepo interface {
 	Payment(customerId, merchantId, cost int) (*entity.Transfer, error)
-	Get(tx *sqlx.Tx, idTransfer int) (*entity.Transfer, error)
+	get(tx *sqlx.Tx, idTransfer int) (*entity.Transfer, error)
 	Insert(tx *sqlx.Tx, customerId, merchantId, cost int) (int, error)
+	GetDetail(transferId int) (*httpResp.TransferDetailResp, error)
 }
 
 type transferRepoImpl struct {
@@ -44,14 +46,14 @@ func (t *transferRepoImpl) Payment(customerId, merchantId, cost int) (*entity.Tr
 	}
 
 	row, err := t.Insert(tx, customerId, merchantId, cost)
-	transfer, err = t.Get(tx, row)
+	transfer, err = t.get(tx, row)
 	if err != nil {
 		return nil, err
 	}
 	return transfer, nil
 }
 
-func (t *transferRepoImpl) Get(tx *sqlx.Tx, idTransfer int) (*entity.Transfer, error) {
+func (t *transferRepoImpl) get(tx *sqlx.Tx, idTransfer int) (*entity.Transfer, error) {
 	funcName := "TransferRepo.Get"
 	var transfer entity.Transfer
 
@@ -74,6 +76,19 @@ func (t *transferRepoImpl) Insert(tx *sqlx.Tx, customerId, merchantId, cost int)
 	id, _ := row.LastInsertId()
 	intId := int(id)
 	return intId, nil
+}
+
+func (t *transferRepoImpl) GetDetail(transferId int) (*httpResp.TransferDetailResp, error) {
+	funcName := "TransferRepo.GetDetail"
+	var transferDetail httpResp.TransferDetailResp
+
+	err := t.db.Get(&transferDetail, "SELECT t.transfer_id, c.name, m.merchant_name, t.updated_at FROM transfer t INNER JOIN customers c ON t.id_customer = c.customer_id"+
+		" INNER JOIN merchant m ON t.id_merchant = m.merchant_id WHERE t.transfer_id = ?", transferId)
+	if err != nil {
+		util.LogError(funcName, "", err)
+		return nil, err
+	}
+	return &transferDetail, nil
 }
 
 func NewTransferRepo(db *sqlx.DB) TransferRepo {
